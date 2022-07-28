@@ -13,6 +13,12 @@ We help companies build, run, deploy and scale software and infrastructure by em
 
 A terraform module to deploy the [linkerd-viz](https://github.com/linkerd/linkerd-viz) Extension on Amazon EKS cluster.
 
+## Dependencies
+
+The module expects these dependencies to be already installed.
+
+* [linkerd](https://github.com/lablabs/terraform-aws-eks-linkerd)
+
 ## Related Projects
 
 Check out other [terraform kubernetes addons](https://github.com/orgs/lablabs/repositories?q=terraform-aws-eks&type=public&language=&sort=).
