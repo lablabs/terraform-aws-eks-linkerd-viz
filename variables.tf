@@ -14,7 +14,7 @@ variable "helm_chart_name" {
 
 variable "helm_chart_version" {
   type        = string
-  default     = "30.3.4"
+  default     = "30.12.9"
   description = "Version of the Helm chart"
 }
 
@@ -23,6 +23,7 @@ variable "helm_release_name" {
   default     = "linkerd-viz"
   description = "Helm release name"
 }
+
 variable "helm_repo_url" {
   type        = string
   default     = "https://helm.linkerd.io/stable"
@@ -135,7 +136,7 @@ variable "argo_helm_values" {
 
 variable "argo_kubernetes_manifest_computed_fields" {
   type        = list(string)
-  default     = ["metadata.labels", "metadata.annotations"]
+  default     = ["metadata.labels", "metadata.annotations", "metadata.finalizers"]
   description = "List of paths of fields to be handled as \"computed\". The user-configured value for the field will be overridden by any different value returned by the API after apply."
 }
 

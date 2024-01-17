@@ -1,4 +1,4 @@
-# AWS EKS Linkerd VIZ Extension Terraform module
+# AWS EKS Linkerd VIZ extension Terraform module
 
 [<img src="https://lablabs.io/static/ll-logo.png" width=350px>](https://lablabs.io/)
 
@@ -7,11 +7,11 @@ We help companies build, run, deploy and scale software and infrastructure by em
 ---
 
 [![Terraform validate](https://github.com/lablabs/terraform-aws-eks-linkerd-viz/actions/workflows/validate.yaml/badge.svg)](https://github.com/lablabs/terraform-aws-eks-linkerd-viz/actions/workflows/validate.yaml)
-[![pre-commit](https://github.com/lablabs/terraform-aws-linkerd-viz/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/lablabs/terraform-aws-eks-linkerd-viz/actions/workflows/pre-commit.yml)
+[![pre-commit](https://github.com/lablabs/terraform-aws-eks-linkerd-viz/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/lablabs/terraform-aws-eks-linkerd-viz/actions/workflows/pre-commit.yml)
 
 ## Description
 
-A Terraform module to deploy the [linkerd-viz](https://github.com/linkerd/linkerd-viz) Extension on Amazon EKS cluster.
+A Terraform module to deploy the [linkerd-viz](https://github.com/linkerd/linkerd-viz) extension on Amazon EKS cluster.
 
 ## Dependencies
 
@@ -28,8 +28,16 @@ Check out other [terraform kubernetes addons](https://github.com/orgs/lablabs/re
 ### Helm
 Deploy Helm chart via Helm resource (default method, set `enabled = true`)
 
+> **Note**
+>
+> There is a static wait time between crds and control plane helm release which in a rare conditions might not be a bulletproof solution. Feel free to increase the wait time by setting `crds_helm_wait_for_crds_duration` variable to suits your needs.
+
 ### Argo Kubernetes
 Deploy Helm chart as ArgoCD Application via Kubernetes manifest resource (set `enabled = true` and `argo_enabled = true`)
+
+> **Note**
+>
+> We are leveraging `kubernetes_manifest` `wait` mechanism to observer ArgoCD `Application` status with these defaults, see `argo.tf:158`. Feel free to override these using `crds_argo_kubernetes_manifest_wait_fields` variable to suits your needs.
 
 > **Warning**
 >
@@ -40,14 +48,9 @@ Deploy Helm chart as ArgoCD Application via Kubernetes manifest resource (set `e
 ### Argo Helm
 Deploy Helm chart as ArgoCD Application via Helm resource (set `enabled = true`, `argo_enabled = true` and `argo_helm_enabled = true`)
 
-<!-- Uncomment paragraph bellow if addon contains IAM resources
-## AWS IAM resources
-
-To disable of creation IRSA role and IRSA policy, set `irsa_role_create = false` and `irsa_policy_enabled = false`, respectively -->
-
-<!-- Uncomment paragraph bellow if addon uses Role assuming
-### Role assuming
-To assume role set `irsa_assume_role_enabled = true` and specify `irsa_assume_role_arn` variable -->
+> **Note**
+>
+> There is a retry policy set on the control plane ArgoCD `Application`, see `argo.tf:89` to retry the installation of the control plane until crds are available which in a rare conditions might not be a bulletproof solution. Feel free to override these using `control_plane_argo_spec` variable to suits your needs.
 
 ## Examples
 
@@ -89,7 +92,7 @@ No modules.
 | <a name="input_argo_helm_enabled"></a> [argo\_helm\_enabled](#input\_argo\_helm\_enabled) | If set to true, the ArgoCD Application manifest will be deployed using Kubernetes provider as a Helm release. Otherwise it'll be deployed as a Kubernetes manifest. See Readme for more info | `bool` | `false` | no |
 | <a name="input_argo_helm_values"></a> [argo\_helm\_values](#input\_argo\_helm\_values) | Value overrides to use when deploying argo application object with helm | `string` | `""` | no |
 | <a name="input_argo_info"></a> [argo\_info](#input\_argo\_info) | ArgoCD info manifest parameter | <pre>list(object({<br>    name  = string<br>    value = string<br>  }))</pre> | <pre>[<br>  {<br>    "name": "terraform",<br>    "value": "true"<br>  }<br>]</pre> | no |
-| <a name="input_argo_kubernetes_manifest_computed_fields"></a> [argo\_kubernetes\_manifest\_computed\_fields](#input\_argo\_kubernetes\_manifest\_computed\_fields) | List of paths of fields to be handled as "computed". The user-configured value for the field will be overridden by any different value returned by the API after apply. | `list(string)` | <pre>[<br>  "metadata.labels",<br>  "metadata.annotations"<br>]</pre> | no |
+| <a name="input_argo_kubernetes_manifest_computed_fields"></a> [argo\_kubernetes\_manifest\_computed\_fields](#input\_argo\_kubernetes\_manifest\_computed\_fields) | List of paths of fields to be handled as "computed". The user-configured value for the field will be overridden by any different value returned by the API after apply. | `list(string)` | <pre>[<br>  "metadata.labels",<br>  "metadata.annotations",<br>  "metadata.finalizers"<br>]</pre> | no |
 | <a name="input_argo_kubernetes_manifest_field_manager_force_conflicts"></a> [argo\_kubernetes\_manifest\_field\_manager\_force\_conflicts](#input\_argo\_kubernetes\_manifest\_field\_manager\_force\_conflicts) | Forcibly override any field manager conflicts when applying the kubernetes manifest resource | `bool` | `false` | no |
 | <a name="input_argo_kubernetes_manifest_field_manager_name"></a> [argo\_kubernetes\_manifest\_field\_manager\_name](#input\_argo\_kubernetes\_manifest\_field\_manager\_name) | The name of the field manager to use when applying the kubernetes manifest resource. Defaults to Terraform | `string` | `"Terraform"` | no |
 | <a name="input_argo_kubernetes_manifest_wait_fields"></a> [argo\_kubernetes\_manifest\_wait\_fields](#input\_argo\_kubernetes\_manifest\_wait\_fields) | A map of fields and a corresponding regular expression with a pattern to wait for. The provider will wait until the field matches the regular expression. Use * for any value. | `map(string)` | `{}` | no |
@@ -101,7 +104,7 @@ No modules.
 | <a name="input_enabled"></a> [enabled](#input\_enabled) | Variable indicating whether deployment is enabled | `bool` | `true` | no |
 | <a name="input_helm_atomic"></a> [helm\_atomic](#input\_helm\_atomic) | If set, installation process purges chart on fail. The wait flag will be set automatically if atomic is used | `bool` | `false` | no |
 | <a name="input_helm_chart_name"></a> [helm\_chart\_name](#input\_helm\_chart\_name) | Helm chart name to be installed | `string` | `"linkerd-viz"` | no |
-| <a name="input_helm_chart_version"></a> [helm\_chart\_version](#input\_helm\_chart\_version) | Version of the Helm chart | `string` | `"30.3.4"` | no |
+| <a name="input_helm_chart_version"></a> [helm\_chart\_version](#input\_helm\_chart\_version) | Version of the Helm chart | `string` | `"30.12.9"` | no |
 | <a name="input_helm_cleanup_on_fail"></a> [helm\_cleanup\_on\_fail](#input\_helm\_cleanup\_on\_fail) | Allow deletion of new resources created in this helm upgrade when upgrade fails | `bool` | `false` | no |
 | <a name="input_helm_create_namespace"></a> [helm\_create\_namespace](#input\_helm\_create\_namespace) | Create the namespace if it does not yet exist | `bool` | `true` | no |
 | <a name="input_helm_dependency_update"></a> [helm\_dependency\_update](#input\_helm\_dependency\_update) | Runs helm dependency update before installing the chart | `bool` | `false` | no |
