@@ -4,7 +4,7 @@
 A Terraform module to deploy the [linkerd-viz](https://github.com/linkerd/linkerd-viz) extension on Amazon EKS cluster.
 
 [![Terraform validate](https://github.com/lablabs/terraform-aws-eks-linkerd-viz/actions/workflows/validate.yaml/badge.svg)](https://github.com/lablabs/terraform-aws-eks-linkerd-viz/actions/workflows/validate.yaml)
-[![pre-commit](https://github.com/lablabs/terraform-aws-eks-linkerd-viz/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/lablabs/terraform-aws-eks-linkerd-viz/actions/workflows/pre-commit.yml)
+[![pre-commit](https://github.com/lablabs/terraform-aws-eks-linkerd-viz/actions/workflows/pre-commit.yaml/badge.svg)](https://github.com/lablabs/terraform-aws-eks-linkerd-viz/actions/workflows/pre-commit.yaml)
 
 ---
 
